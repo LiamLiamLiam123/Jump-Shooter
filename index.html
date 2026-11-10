@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"><title>JumpGun</title><meta name="theme-color" content="#0b0f1a">
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"><title>JumpShooter</title><meta name="theme-color" content="#0b0f1a">
 <style>
 :root{--bg:#0b0f1a;--p:#141b2e;--g:#00ff7b;--o:#ff8a1f;--b:#2ea8ff;--t:#e8eefc;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
 html,body{margin:0;background:var(--bg);color:var(--t);font-family:'Trebuchet MS',Verdana,sans-serif}
@@ -151,7 +151,7 @@ function ui(h){O.innerHTML=h;O.style.display=h?'block':'none'}
 function pause(){const g=G;if(g.done)return;g.paused=!g.paused;if(!g.paused)return ui('');const p=g.p;
 ui(`<h2>Paused</h2><div class=row><button onclick="pause()">Resume</button>${g.L.mp?'':'<button onclick="startGame(G.L,G.mode)">Restart</button>'}<button onclick="menu()">Quit to Menu</button></div><p>WASD/Arrows move · Space jump (double jump) · Mouse aim+shoot · R reload · Q/1-8 weapon</p><table><tr><th>Weapon<th>Rarity<th>DMG<th>ROF<th>Reload<th>Mag<th>Range<th>Speed<th>Acc</tr>${WP.slice(0,p.n).map((w,i)=>`<tr class="${i==p.w?'sel':''}" onclick="G.p.w=${i};G.p.rl=0;pause();pause()" style="cursor:pointer"><td>${w.n}<td style="color:${RC[w.rar]}">${w.rar}<td>${w.dmg}${w.pel?'x'+w.pel:''}${w.ex?' AoE':''}<td>${(1/w.rate).toFixed(1)}/s<td>${w.rel}s<td>${w.mag}<td>${w.range}<td>${w.spd}<td>${Math.round((1-w.acc)*100)}%</tr>`).join('')}</table>`)}
 function menu(){mpLeave();G=null;const pc=(S.xp-100*(lvl()-1)**2)/(200*lvl()-100)*100;
-ui(`<div class=top><canvas id=pv width=60 height=70></canvas><div><b>${S.name}</b> (Guest)<br>Level ${lvl()} · ${S.xp} XP · Skin: ${skin(S.skin).n}<div class=bar><i style="width:${pc}%"></i></div></div><div class=gd>G$ ${S.gd}</div></div><h1>JUMPGUN</h1><div class=mm><button onclick="levels()">▶ Play Singleplayer</button><button onclick="startGame(prac(),'prac')">Practice Mode</button><button onclick="mpMenu()">Multiplayer</button><button onclick="shop(0)">Item Shop</button><button onclick="shop(1)">Inventory</button><button onclick="profile()">Profile</button><button onclick="settings()">Settings</button><button onclick="daily()">Daily Rewards</button><button onclick="net('Login / Register')" style="grid-column:span 2">Login / Register</button></div>`);
+ui(`<div class=top><canvas id=pv width=60 height=70></canvas><div><b>${S.name}</b> (Guest)<br>Level ${lvl()} · ${S.xp} XP · Skin: ${skin(S.skin).n}<div class=bar><i style="width:${pc}%"></i></div></div><div class=gd>G$ ${S.gd}</div></div><h1>JumpShooter</h1><div class=mm><button onclick="levels()">▶ Play Singleplayer</button><button onclick="startGame(prac(),'prac')">Practice Mode</button><button onclick="mpMenu()">Multiplayer</button><button onclick="shop(0)">Item Shop</button><button onclick="shop(1)">Inventory</button><button onclick="profile()">Profile</button><button onclick="settings()">Settings</button><button onclick="daily()">Daily Rewards</button><button onclick="net('Login / Register')" style="grid-column:span 2">Login / Register</button></div>`);
 const c=$('#pv').getContext('2d');drawChar(c,30,66,skin(S.skin),1,0,0,1.1)}
 function back(){return'<button onclick="menu()">← Back</button>'}
 function levels(){ui(`${back()}<h2>Campaign</h2>${WORLDS.map((w,wi)=>`<div class=card style="margin:6px 0;text-align:left"><b style="color:${w.tp}">World ${wi+1}: ${w.n}</b>${wi%1==0&&wi<5?' (boss at level 6)':''}<br>${[0,1,2,3,4,5].map(k=>{const i=wi*6+k;return`<button class=lv ${i+1>S.prog?'disabled':''} onclick="play(${i})">${i+1}${S.best[i]?'<br><small>'+S.best[i]+'</small>':''}</button>`}).join('')}</div>`).join('')}`)}
@@ -211,11 +211,11 @@ loop(last);menu();
 window.JG_CONFIG={url:'https://eeqiorinragqjfogbeqm.supabase.co',anonKey:'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVlcWlvcmlucmFncWpmb2diZXFtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTQyNDQ2NTIsImV4cCI6MjEwOTgyMDY1Mn0.GoyblV9vgKV-5jN1KIFfv33fZT69m1U5jzs_36wFRHs'};
 </script>
 <script>
-/* JumpGun <-> Supabase bridge. Loaded AFTER the game script; overrides game functions.
+/* JumpShooter <-> Supabase bridge. Loaded AFTER the game script; overrides game functions.
    Uses only the public anon key. Never put the service-role key in frontend code. */
 (() => {
 const C = window.JG_CONFIG || {};
-if (!C.url || !C.anonKey || !window.supabase || /YOUR-/.test(C.url + C.anonKey)) { console.warn('JumpGun: Supabase not configured (edit config.js) - running as guest only.'); return; }
+if (!C.url || !C.anonKey || !window.supabase || /YOUR-/.test(C.url + C.anonKey)) { console.warn('JumpShooter: Supabase not configured (edit config.js) - running as guest only.'); return; }
 const sb = window.supabase.createClient(C.url, C.anonKey, { realtime: { params: { eventsPerSecond: 40 } } });
 let user = null;
 const toast = m => { const d = document.createElement('div'); d.textContent = m; d.style.cssText = 'position:fixed;left:50%;top:12px;transform:translateX(-50%);background:#400;color:#fff;padding:8px 14px;border-radius:8px;z-index:9;font:14px sans-serif'; document.body.appendChild(d); setTimeout(() => d.remove(), 3500); };
